@@ -46,14 +46,7 @@ void dateType::printDate() const {
 	cout << month << "-" << day << "-" << year << endl;
 }
 
-bool dateType::isLeapYear() const {
-	if(year%4 == 0){
-		return true;
-	}else {
-		return false;
-	}
-}
-
+// find current day of year
 int dateType::curDayOfYear() const {
 	int currentDay = 0;
 
@@ -113,6 +106,7 @@ int dateType::curDayOfYear() const {
 
 }
 
+// DAYS LEFT IN YEAR
 int dateType::numOfDaysLeft() const {
 	int currentDay = 0; // variable that will hold the number of days left in year
 	int daysLeft; // variable that will hold the number of days left in year accounting for a leap year
@@ -168,6 +162,7 @@ int dateType::numOfDaysLeft() const {
 		return daysLeft;
 }
 
+// finds how many weeks into the year set date is
 int dateType::curWeekOfYear() const {
 	int currentDay = 0;
 	int currWeek;
@@ -325,6 +320,7 @@ extDateType::extDateType() {
 	monthString = "";
 }
 
+//
 string extDateType::getDateStr() {
 	switch(month) {
 							case 1:
@@ -373,6 +369,84 @@ void extDateType::printDateStr(string x) {
 	cout << endl << x << ", " << day << " " << year << endl;
 }
 
+calClass::calClass() {
+}
+
+// Used in helping to determine the day of the week that a month falls on.
+int calClass::calcDaysSoFar(int year, int month) const
+{
+
+	int days;
+	int decMonth = month - 1;
+
+	days = (year - firstYear) * 365;
+	days = days + dayOffset;
+	days = days + daysPassed[decMonth];
+
+	// adding on past leapdays
+	for (int x = firstLeapYear; x < year; x += 4)
+	{
+		if(isLeapYear(x))
+		{
+			days++;
+		}
+	}
+
+	// add another leapday if the inputted year is later than feb
+	if(month > 2 && isLeapYear(year))
+	{
+		days++;
+	}
+	return days;
+}
+
+// Check for leap year and return true or false
+bool calClass::isLeapYear(int x) const
+{
+	return (!(x%4)&&(x%100)) || !(x%400);
+}
+
+
+// Displays the calendar
+void calClass::printCalendar(int month, int year, int firstDay) const
+{
+	int count;
+	int offset;
+
+	cout << "\n";
+
+	cout << months[month-1] << "     " << year << '\n';
+	cout << "Sun " << "Mon " << "Tue " << "Wed " << "Thu " << "Fri " << "Sat " << '\n';
+
+	offset = 1 - firstDay;
+
+	// number of days in the current month
+	count = daysInMonth[month-1];
+
+	if(isLeapYear(year) && (month == 2))
+	{
+		count++;
+	}
+
+	for(int x = offset; x <= count; x +=7)
+	{
+		for(int column = x; (column < x+7) && (column <= count); column++)
+		{
+			if(column <=0)
+			{
+				cout << setw(4) << left << setprecision(3) << " ";
+			}
+			else {
+				cout << setw(4) << left << setprecision(3) << setfill(' ') << column;
+			}
+		}
+		cout << '\n';;
+	}
+
+	cout << '\n';
+}
+
+// DISPLAY MENU
 void displayMenu() {
 	cout << "\nMENU\n";
 	cout << "0 - EXIT\n";
@@ -383,6 +457,7 @@ void displayMenu() {
 	cout << "5 - CURRENT WEEK OF YEAR\n";
 	cout << "6 - DAYS LEFT IN YEAR\n";
 	cout << "7 - PRINT DATE\n";
+	cout << "8 - PRINT CALENDAR\n";
 	cout << "Enter command: ";
 }
 
